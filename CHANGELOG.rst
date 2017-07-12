@@ -8,6 +8,8 @@ Change log
   ``SecurityCanonicalDomainMiddleware`` and added a new setting
   ``CANONICAL_DOMAIN_SECURE`` which replaces our usage of
   ``SECURE_SSL_REDIRECT``.
+- Added some documentation.
+- Fixed links in the changelog.
 
 
 `0.1`_ (2017-07-12)
