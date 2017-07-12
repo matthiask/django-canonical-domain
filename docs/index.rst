@@ -13,37 +13,30 @@ setting, but this setting only affects redirects from HTTP to HTTPS.
 Django also has ``PREPEND_WWW``, but this is not sufficient for
 canonical domain redirects either.
 
-django-canonical-domain offers two middleware classes:
-
-- ``CanonicalDomainMiddleware`` does nothing but redirect all requests
-  to the ``CANONICAL_DOMAIN`` setting while preserving the protocol,
-  path and query string parts of the request.
-- ``SecurityCanonicalDomainMiddleware`` extends Django's
-  ``SecurityMiddleware`` with the added functionality of redirecting all
-  requests to ``CANONICAL_DOMAIN`` (respectively ``SECURE_SSL_HOST``,
-  but see below), not just insecure requests.
+django-canonical-domain offers a middleware which replaces Django's
+``SecurityMiddleware`` request processing with a variant that redirects
+all requests to ``CANONICAL_DOMAIN``, with optionally also enforcing
+HTTPS (similar to ``SecurityMiddleware``'s ``SECURE_SSL_HOST`` and
+``SECURE_SSL_REDIRECT`` settings) with the small but important
+difference that requests which already are secure are redirected to the
+canonical domain as well. (``SecurityMiddleware`` only redirects
+insecure requests to ``SECURE_SSL_HOST``.)
 
 
 Installation
 ============
 
 - ``pip install django-canonical-domain``
-- Either
+- Add ``canonical_domain.middleware.CanonicalDomainMiddleware`` to your
+  ``MIDDLEWARE`` setting (or ``MIDDLEWARE_CLASSES`` if you still are on
+  a old school Django version)
+- Set ``CANONICAL_DOMAIN = 'example.com'`` in your settings.
+- Optionally set ``CANONICAL_DOMAIN_SECURE = True`` if you want to
+  enforce HTTPS and any additional ``SECURE_*`` settings from Django
+  proper.
 
-  - Add ``canonical_domain.middleware.CanonicalDomainMiddleware`` to
-    your ``MIDDLEWARE`` setting (or ``MIDDLEWARE_CLASSES`` if you still
-    are on a old school Django version)
-  - Or replace the ``SecurityMiddleware`` with
-    ``canonical_domain.middleware.SecurityCanonicalDomainMiddleware``
+Note that the middleware does nothing if ``DEBUG`` is ``True`` or if
+``CANONICAL_DOMAIN`` is not set.
 
-- If using ``CanonicalDomainMiddleware`` set ``CANONICAL_DOMAIN =
-  'example.com'`` in your settings. The middleware does nothing if
-  ``DEBUG`` is ``True``.
-- If using ``SecurityCanonicalDomainMiddleware`` configure the
-  ``SecurityMiddleware`` as you would without the canonical part. The
-  middleware prefers the ``CANONICAL_DOMAIN`` setting over
-  ``SECURE_SSL_HOST``, but apart from that configuration is exactly the
-  same. Note that you probably also want to set ``SECURE_SSL_REDIRECT``
-  to ``True``.
 
 .. include:: ../CHANGELOG.rst

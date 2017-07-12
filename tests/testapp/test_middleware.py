@@ -17,13 +17,13 @@ class MiddlewareNotUsedTestCase(TestCase):
 
 
 @override_settings(
-    CANONICAL_DOMAIN='example.com',
     MIDDLEWARE=[
         'canonical_domain.middleware.CanonicalDomainMiddleware',
     ],
+    CANONICAL_DOMAIN='example.com',
 )
-class CanonicalDomainMiddlewareTestCase(TestCase):
-    def test_middleware(self):
+class CanonicalDomainTestCase(TestCase):
+    def test_http_requests(self):
         response = self.client.get(
             '/',
             HTTP_HOST='www.example.com',
@@ -38,35 +38,11 @@ class CanonicalDomainMiddlewareTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Hello world')
 
-
-@override_settings(
-    MIDDLEWARE=[
-        'canonical_domain.middleware.SecurityCanonicalDomainMiddleware',
-    ],
-)
-class UnusedSecurityCanonicalDomainMiddlewareTestCase(TestCase):
-    def test_request(self):
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'Hello world')
-
-
-@override_settings(
-    MIDDLEWARE=[
-        'canonical_domain.middleware.SecurityCanonicalDomainMiddleware',
-    ],
-    SECURE_SSL_REDIRECT=True,
-    SECURE_SSL_HOST='example.com',
-)
-class SecurityCanonicalDomainMiddlewareTestCase(TestCase):
-    def test_middleware(self):
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 301)
-        self.assertEqual(response['Location'], 'https://example.com/')
-
+    def test_https_requests(self):
         response = self.client.get(
             '/',
             HTTP_HOST='www.example.com',
+            secure=True,
         )
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response['Location'], 'https://example.com/')
@@ -79,8 +55,28 @@ class SecurityCanonicalDomainMiddlewareTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Hello world')
 
-        # This is the difference to Django's SecurityMiddleware redirect
-        # behavior
+
+@override_settings(
+    MIDDLEWARE=[
+        'canonical_domain.middleware.CanonicalDomainMiddleware',
+    ],
+    CANONICAL_DOMAIN='example.com',
+    CANONICAL_DOMAIN_SECURE=True,
+)
+class CanonicalDomainSecureTestCase(TestCase):
+    def test_http_redirects(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response['Location'], 'https://example.com/')
+
+        response = self.client.get(
+            '/',
+            HTTP_HOST='www.example.com',
+        )
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response['Location'], 'https://example.com/')
+
+    def test_https_redirects(self):
         response = self.client.get(
             '/',
             HTTP_HOST='www.example.com',
@@ -88,3 +84,12 @@ class SecurityCanonicalDomainMiddlewareTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response['Location'], 'https://example.com/')
+
+    def test_match(self):
+        response = self.client.get(
+            '/',
+            HTTP_HOST='example.com',
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'Hello world')
