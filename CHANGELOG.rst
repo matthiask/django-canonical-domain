@@ -12,4 +12,4 @@ Change log
 .. _0.1: https://github.com/matthiask/django-canonical-domain/commit/55721303fc
 .. _0.2: https://github.com/matthiask/django-canonical-domain/compare/0.1...0.2
 .. _0.3: https://github.com/matthiask/django-canonical-domain/compare/0.2...0.3
-.. _Next version: https://github.com/matthiask/django-canonical-domain/compare/0.3...master
+.. _Next version: https://github.com/matthiask/django-canonical-domain/compare/0.1...master
