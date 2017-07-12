@@ -11,7 +11,7 @@ from testapp.settings import MIDDLEWARE
         'canonical_domain.middleware.CanonicalDomainMiddleware',
     ] + MIDDLEWARE,
 )
-class SimpleTestCase(TestCase):
+class MiddlewareNotUsedTestCase(TestCase):
     def test_request(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
@@ -24,8 +24,8 @@ class SimpleTestCase(TestCase):
         'canonical_domain.middleware.CanonicalDomainMiddleware',
     ] + MIDDLEWARE,
 )
-class CanonicalDomainTestCase(TestCase):
-    def test_canonical_middleware(self):
+class CanonicalDomainMiddlewareTestCase(TestCase):
+    def test_middleware(self):
         response = self.client.get(
             '/',
             HTTP_HOST='www.example.com',
@@ -46,7 +46,7 @@ class CanonicalDomainTestCase(TestCase):
         'canonical_domain.middleware.SecurityCanonicalDomainMiddleware',
     ] + MIDDLEWARE,
 )
-class SimpleSecurityTestCase(TestCase):
+class UnusedSecurityCanonicalDomainMiddlewareTestCase(TestCase):
     def test_request(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
@@ -61,7 +61,7 @@ class SimpleSecurityTestCase(TestCase):
     SECURE_SSL_HOST='example.com',
 )
 class SecurityCanonicalDomainMiddlewareTestCase(TestCase):
-    def test_request(self):
+    def test_middleware(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response['Location'], 'https://example.com/')
