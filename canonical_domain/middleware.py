@@ -7,14 +7,17 @@ from django.middleware.security import SecurityMiddleware
 
 
 class CanonicalDomainMiddleware(SecurityMiddleware):
+    canonical_domain = None
+    canonical_domain_secure = None
+
     def __init__(self, *args, **kwargs):
         super(CanonicalDomainMiddleware, self).__init__(*args, **kwargs)
-        self.canonical_domain = getattr(settings, 'CANONICAL_DOMAIN', None)
-        self.canonical_domain_secure = getattr(
-            settings,
-            'CANONICAL_DOMAIN_SECURE',
-            False,
-        )
+        try:
+            self.canonical_domain = settings.CANONICAL_DOMAIN
+            self.canonical_domain_secure = settings.CANONICAL_DOMAIN_SECURE
+        except AttributeError:
+            pass
+
         if settings.DEBUG or not self.canonical_domain:
             raise MiddlewareNotUsed
 
