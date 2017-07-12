@@ -27,7 +27,8 @@ class CanonicalDomainMiddleware(MiddlewareMixin):
 
 class SecurityCanonicalDomainMiddleware(SecurityMiddleware):
     def __init__(self, *args, **kwargs):
-        super(SecurityCanonicalDomainMiddleware, self).__init__(*args, **kwargs)
+        super(SecurityCanonicalDomainMiddleware, self).__init__(
+            *args, **kwargs)
         self.redirect_host = (
             getattr(settings, 'CANONICAL_DOMAIN', None) or
             settings.SECURE_SSL_HOST
