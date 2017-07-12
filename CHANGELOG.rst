@@ -4,6 +4,9 @@ Change log
 `Next version`_
 ~~~~~~~~~~~~~~~
 
+`0.2`_ (2017-07-12)
+~~~~~~~~~~~~~~~~~~~
+
 - Merged ``CanonicalDomainMiddleware`` and
   ``SecurityCanonicalDomainMiddleware`` and added a new setting
   ``CANONICAL_DOMAIN_SECURE`` which replaces our usage of
@@ -19,4 +22,4 @@ Change log
 
 .. _0.1: https://github.com/matthiask/django-canonical-domain/commit/55721303fc
 .. _0.2: https://github.com/matthiask/django-canonical-domain/compare/0.1...0.2
-.. _Next version: https://github.com/matthiask/django-canonical-domain/compare/0.1...master
+.. _Next version: https://github.com/matthiask/django-canonical-domain/compare/0.2...master
