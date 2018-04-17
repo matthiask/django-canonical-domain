@@ -27,8 +27,5 @@ Installation and usage
 - Set additional ``SECURE_*`` settings -- all settings are valid and
   supported except for ``SECURE_SSL_REDIRECT`` and ``SECURE_SSL_HOST``.
 
-Note that the middleware does nothing if ``DEBUG`` is ``True`` or if
-``CANONICAL_DOMAIN`` is not set.
-
 
 .. include:: ../CHANGELOG.rst

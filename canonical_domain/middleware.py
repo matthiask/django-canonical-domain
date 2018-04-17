@@ -1,7 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.conf import settings
-from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpResponsePermanentRedirect
 from django.middleware.security import SecurityMiddleware
 
@@ -12,16 +11,21 @@ class CanonicalDomainMiddleware(SecurityMiddleware):
 
     def __init__(self, *args, **kwargs):
         super(CanonicalDomainMiddleware, self).__init__(*args, **kwargs)
-        try:
-            self.canonical_domain = settings.CANONICAL_DOMAIN
-            self.canonical_domain_secure = settings.CANONICAL_DOMAIN_SECURE
-        except AttributeError:
-            pass
-
-        if settings.DEBUG or not self.canonical_domain:
-            raise MiddlewareNotUsed
+        self.canonical_domain = getattr(
+            settings,
+            'CANONICAL_DOMAIN',
+            '',
+        )
+        self.canonical_domain_secure = getattr(
+            settings,
+            'CANONICAL_DOMAIN_SECURE',
+            False,
+        )
 
     def process_request(self, request):
+        if not self.canonical_domain:
+            return
+
         matches = request.get_host() == self.canonical_domain
         if matches and self.canonical_domain_secure and request.is_secure():
             return

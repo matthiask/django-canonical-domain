@@ -4,6 +4,9 @@ Change log
 `Next version`_
 ~~~~~~~~~~~~~~~
 
+- Removed the self-deactivation of the middleware when ``DEBUG = True``.
+
+
 `0.2`_ (2017-07-12)
 ~~~~~~~~~~~~~~~~~~~
 
