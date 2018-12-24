@@ -23,7 +23,11 @@ class CanonicalDomainMiddleware(SecurityMiddleware):
         )
 
     def process_request(self, request):
-        if not self.canonical_domain:
+        # Only redirect safe methods according to the RFC:
+        # https://tools.ietf.org/html/rfc7231#section-4.2.1
+        if not self.canonical_domain or request.method not in {
+            "GET", "HEAD", "OPTIONS", "TRACE"
+        }:
             return
 
         matches = request.get_host() == self.canonical_domain

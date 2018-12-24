@@ -32,6 +32,10 @@ class CanonicalDomainTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'Hello world')
 
+        response = self.client.post('/', HTTP_HOST='example.org')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'Hello world')
+
     def test_https_requests(self):
         response = self.client.get('/', HTTP_HOST='example.org', secure=True)
         self.assertEqual(response.status_code, 301)
