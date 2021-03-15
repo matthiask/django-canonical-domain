@@ -5,6 +5,8 @@ Change log
 ~~~~~~~~~~~~~~~
 
 - Dropped official support for Django < 2.2 and Python < 3.6.
+- Switched to a declarative setup.
+- Switched to GitHub actions.
 
 
 `0.3`_ (2018-12-24)

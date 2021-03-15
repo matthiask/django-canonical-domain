@@ -2,8 +2,9 @@
 django-canonical-domain - Canonical domain redirection for Django
 =================================================================
 
-.. image:: https://travis-ci.org/matthiask/django-canonical-domain.png?branch=master
-   :target: https://travis-ci.org/matthiask/django-canonical-domain
+.. image:: https://github.com/matthiask/django-canonical-domain/actions/workflows/tests.yml/badge.svg
+    :target: https://github.com/matthiask/django-canonical-domain/
+    :alt: CI Status
 
 .. image:: https://readthedocs.org/projects/django-canonical-domain/badge/?version=latest
     :target: https://django-canonical-domain.readthedocs.io/en/latest/?badge=latest

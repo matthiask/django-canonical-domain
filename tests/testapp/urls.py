@@ -1,5 +1,4 @@
-from django.conf.urls import url
 from django.http import HttpResponse
+from django.urls import path
 
-
-urlpatterns = [url(r"^$", lambda request: HttpResponse("Hello world"))]
+urlpatterns = [path("", lambda request: HttpResponse("Hello world"))]
