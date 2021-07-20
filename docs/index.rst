@@ -8,19 +8,14 @@ This module allows redirecting all requests for a given Django instance
 to a single canonical domain and optionally enforcing HTTPS for all
 requests as well.
 
-It achieves this by providing a replacement for Django's
-``django.middleware.security.SecurityMiddleware`` which overrides its
-request processing with a variant that also redirects requests to the
-canonical domain which already are secure.
-
 
 Installation and usage
 ======================
 
 - ``pip install django-canonical-domain``
-- Add ``canonical_domain.middleware.CanonicalDomainMiddleware`` to your
-  ``MIDDLEWARE`` setting (or ``MIDDLEWARE_CLASSES`` if you still are on
-  a old school Django version)
+- Add ``canonical_domain.middleware.canonical_domain`` to your ``MIDDLEWARE``
+  setting. Ensure that you add this middleware *before*
+  ``django.middleware.security.SecurityMiddleware``.
 - Set ``CANONICAL_DOMAIN = 'example.com'`` in your settings.
 - Optionally set ``CANONICAL_DOMAIN_SECURE = True`` if you want to
   enforce HTTPS.

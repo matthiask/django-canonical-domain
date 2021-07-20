@@ -1,10 +1,8 @@
-from __future__ import absolute_import, unicode_literals
-
 from django.test import TestCase
 from django.test.utils import override_settings
 
 
-@override_settings(MIDDLEWARE=["canonical_domain.middleware.CanonicalDomainMiddleware"])
+@override_settings(MIDDLEWARE=["canonical_domain.middleware.canonical_domain"])
 class MiddlewareNotUsedTestCase(TestCase):
     def test_request(self):
         response = self.client.get("/")
@@ -13,7 +11,7 @@ class MiddlewareNotUsedTestCase(TestCase):
 
 
 @override_settings(
-    MIDDLEWARE=["canonical_domain.middleware.CanonicalDomainMiddleware"],
+    MIDDLEWARE=["canonical_domain.middleware.canonical_domain"],
     CANONICAL_DOMAIN="example.com",
 )
 class CanonicalDomainTestCase(TestCase):
@@ -41,7 +39,7 @@ class CanonicalDomainTestCase(TestCase):
 
 
 @override_settings(
-    MIDDLEWARE=["canonical_domain.middleware.CanonicalDomainMiddleware"],
+    MIDDLEWARE=["canonical_domain.middleware.canonical_domain"],
     CANONICAL_DOMAIN="example.com",
     CANONICAL_DOMAIN_SECURE=True,
 )

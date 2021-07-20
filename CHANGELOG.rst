@@ -7,6 +7,10 @@ Change log
 - Dropped official support for Django < 2.2 and Python < 3.6.
 - Switched to a declarative setup.
 - Switched to GitHub actions.
+- Replaced the ``CanonicalDomainMiddleware`` with a new function-based
+  ``canonical_domain`` middleware which does not extend ``SecurityMiddleware``.
+  You should add ``SecurityMiddleware`` yourself and remove the silencing of
+  ``security.W001``.
 
 
 `0.3`_ (2018-12-24)
