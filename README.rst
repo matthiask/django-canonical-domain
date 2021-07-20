@@ -14,10 +14,5 @@ This module allows redirecting all requests for a given Django instance
 to a single canonical domain and optionally enforcing HTTPS for all
 requests as well.
 
-It achieves this by providing a replacement for Django's
-``django.middleware.security.SecurityMiddleware`` which overrides its
-request processing with a variant that also redirects requests to the
-canonical domain which already are secure.
-
 - `Documentation <https://django-canonical-domain.readthedocs.io>`_
 - `Github <https://github.com/matthiask/django-canonical-domain/>`_
