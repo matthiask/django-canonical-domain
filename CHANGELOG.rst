@@ -4,6 +4,10 @@ Change log
 `Next version`_
 ~~~~~~~~~~~~~~~
 
+- Added pre-commit.
+- Dropped support for Django < 3.2, Python < 3.8, added support for Django 4.0
+  and Python 3.10.
+
 
 `0.4`_ (2021-07-20)
 ~~~~~~~~~~~~~~~~~~~
