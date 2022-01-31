@@ -4,6 +4,10 @@ Change log
 `Next version`_
 ~~~~~~~~~~~~~~~
 
+
+`0.9`_ (2022-01-31)
+~~~~~~~~~~~~~~~~~~~
+
 - Added pre-commit.
 - Dropped support for Django < 3.2, Python < 3.8, added support for Django 4.0
   and Python 3.10.
@@ -56,4 +60,5 @@ Change log
 .. _0.2: https://github.com/matthiask/django-canonical-domain/compare/0.1...0.2
 .. _0.3: https://github.com/matthiask/django-canonical-domain/compare/0.2...0.3
 .. _0.4: https://github.com/matthiask/django-canonical-domain/compare/0.3...0.4
-.. _Next version: https://github.com/matthiask/django-canonical-domain/compare/0.4...master
+.. _0.9: https://github.com/matthiask/django-canonical-domain/compare/0.4...0.9
+.. _Next version: https://github.com/matthiask/django-canonical-domain/compare/0.9...master
