@@ -16,11 +16,9 @@ Installation and usage
 - Add ``canonical_domain.middleware.canonical_domain`` to your ``MIDDLEWARE``
   setting. Ensure that you add this middleware *before*
   ``django.middleware.security.SecurityMiddleware``.
-- Set ``CANONICAL_DOMAIN = 'example.com'`` in your settings.
-- Optionally set ``CANONICAL_DOMAIN_SECURE = True`` if you want to
+- Set ``SECURE_SSL_HOST = 'example.com'`` in your settings.
+- Optionally set ``SECURE_SSL_REDIRECT = True`` if you want to
   enforce HTTPS.
-- Set additional ``SECURE_*`` settings -- all settings are valid and
-  supported except for ``SECURE_SSL_REDIRECT`` and ``SECURE_SSL_HOST``.
 
 
 .. include:: ../CHANGELOG.rst

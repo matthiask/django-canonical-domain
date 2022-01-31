@@ -7,6 +7,12 @@ Change log
 - Added pre-commit.
 - Dropped support for Django < 3.2, Python < 3.8, added support for Django 4.0
   and Python 3.10.
+- Switched back to using ``SECURE_SSL_REDIRECT`` and ``SECURE_SSL_HOST`` --
+  introducing our own settings made it necessary to silence Django's system
+  checks for them. Let's not do that anymore. Added system checks to ensure
+  that the new settings are added correctly.
+- Added a system check which verifies that the canonical domain middleware
+  appears before the security middleware in ``MIDDLEWARE``.
 
 
 `0.4`_ (2021-07-20)
