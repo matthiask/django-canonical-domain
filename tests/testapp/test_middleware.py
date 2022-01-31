@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from canonical_domain.middleware import check
+from canonical_domain.apps import check
 
 
 @override_settings(MIDDLEWARE=["canonical_domain.middleware.canonical_domain"])

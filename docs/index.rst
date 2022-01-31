@@ -13,7 +13,8 @@ Installation and usage
 ======================
 
 - ``pip install django-canonical-domain``
-- Add ``canonical_domain.middleware.canonical_domain`` to your ``MIDDLEWARE``
+- Add ``canonical_domain`` to ``INSTALLED_APPS`` and
+  ``canonical_domain.middleware.canonical_domain`` to your ``MIDDLEWARE``
   setting. Ensure that you add this middleware *before*
   ``django.middleware.security.SecurityMiddleware``.
 - Set ``SECURE_SSL_HOST = 'example.com'`` in your settings.
