@@ -4,6 +4,8 @@ Change log
 `Next version`_
 ~~~~~~~~~~~~~~~
 
+- Added the requirement that ``canonical_domain`` be added to
+  ``INSTALLED_APPS`` because otherwise the system checks wouldn't run at all.
 - Added deploy checks which verify that ``SECURE_SSL_HOST`` and
   ``SECURE_SSL_REDIRECT`` have been set.
 
