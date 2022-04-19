@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from canonical_domain.apps import check
+from canonical_domain.apps import default_checks, deploy_checks
 
 
 @override_settings(MIDDLEWARE=["canonical_domain.middleware.canonical_domain"])
@@ -67,8 +67,8 @@ class CanonicalDomainSecureTestCase(TestCase):
 
 
 class ChecksTestCase(TestCase):
-    def assertCheckCodes(self, codes):
-        self.assertEqual([obj.id for obj in check()], codes)
+    def assertCheckCodes(self, check_results, codes):
+        self.assertEqual([obj.id for obj in check_results], codes)
 
     @override_settings(
         MIDDLEWARE=[
@@ -79,7 +79,7 @@ class ChecksTestCase(TestCase):
         SECURE_SSL_REDIRECT=True,
     )
     def test_valid(self):
-        self.assertCheckCodes([])
+        self.assertCheckCodes(default_checks(), [])
 
     @override_settings(
         SECURE_SSL_HOST="example.com",
@@ -92,7 +92,7 @@ class ChecksTestCase(TestCase):
                 "django.middleware.security.SecurityMiddleware",
             ],
         ):
-            self.assertCheckCodes([])
+            self.assertCheckCodes(default_checks(), [])
 
         with override_settings(
             MIDDLEWARE=[
@@ -100,7 +100,7 @@ class ChecksTestCase(TestCase):
                 "canonical_domain.middleware.canonical_domain",
             ],
         ):
-            self.assertCheckCodes(["canonical_domain.E001"])
+            self.assertCheckCodes(default_checks(), ["canonical_domain.E001"])
 
         with override_settings(
             MIDDLEWARE=[
@@ -108,21 +108,33 @@ class ChecksTestCase(TestCase):
                 # "django.middleware.security.SecurityMiddleware",
             ],
         ):
-            self.assertCheckCodes([])
+            self.assertCheckCodes(default_checks(), [])
 
     def test_removed_settings(self):
         with override_settings(
             CANONICAL_DOMAIN="example.com",
         ):
-            self.assertCheckCodes(["canonical_domain.E002"])
+            self.assertCheckCodes(default_checks(), ["canonical_domain.E002"])
 
         with override_settings(
             CANONICAL_DOMAIN_SECURE="",  # Value isn't important
         ):
-            self.assertCheckCodes(["canonical_domain.E003"])
+            self.assertCheckCodes(default_checks(), ["canonical_domain.E003"])
 
         with override_settings(
             CANONICAL_DOMAIN="example.com",
             CANONICAL_DOMAIN_SECURE="",  # Value isn't important
         ):
-            self.assertCheckCodes(["canonical_domain.E002", "canonical_domain.E003"])
+            self.assertCheckCodes(
+                default_checks(), ["canonical_domain.E002", "canonical_domain.E003"]
+            )
+
+    def test_deploy_settings(self):
+        self.assertCheckCodes(
+            deploy_checks(), ["canonical_domain.W004", "canonical_domain.W005"]
+        )
+        with override_settings(
+            SECURE_SSL_HOST="example.com",
+            SECURE_SSL_REDIRECT=True,
+        ):
+            self.assertCheckCodes(deploy_checks(), [])

@@ -4,6 +4,9 @@ Change log
 `Next version`_
 ~~~~~~~~~~~~~~~
 
+- Added deploy checks which verify that ``SECURE_SSL_HOST`` and
+  ``SECURE_SSL_REDIRECT`` have been set.
+
 
 `0.9`_ (2022-01-31)
 ~~~~~~~~~~~~~~~~~~~
