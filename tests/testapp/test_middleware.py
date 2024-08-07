@@ -39,6 +39,20 @@ class CanonicalDomainTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"Hello world")
 
+    @override_settings(CANONICAL_DOMAIN_EXCEPTIONS=["api.example.com"])
+    def test_exceptions(self):
+        response = self.client.get("/", headers={"host": "api.example.com"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"Hello world")
+
+        response = self.client.get("/", headers={"host": "example.org"})
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response["Location"], "http://example.com/")
+
+        response = self.client.get("/", headers={"host": "foo.example.com"})
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response["Location"], "http://example.com/")
+
 
 @override_settings(
     MIDDLEWARE=["canonical_domain.middleware.canonical_domain"],
@@ -64,6 +78,24 @@ class CanonicalDomainSecureTestCase(TestCase):
         response = self.client.get("/", headers={"host": "example.com"}, secure=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"Hello world")
+
+    @override_settings(CANONICAL_DOMAIN_EXCEPTIONS=["api.example.com"])
+    def test_exceptions(self):
+        response = self.client.get("/", headers={"host": "api.example.com"}, secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"Hello world")
+
+        response = self.client.get("/", headers={"host": "api.example.com"})
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response["Location"], "https://api.example.com/")
+
+        response = self.client.get("/", headers={"host": "example.org"})
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response["Location"], "https://example.com/")
+
+        response = self.client.get("/", headers={"host": "foo.example.com"})
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response["Location"], "https://example.com/")
 
 
 class ChecksTestCase(TestCase):
