@@ -14,6 +14,10 @@ if not apps.is_installed("canonical_domain"):
 def canonical_domain(get_response):
     host = getattr(settings, "SECURE_SSL_HOST", "")
     secure = getattr(settings, "SECURE_SSL_REDIRECT", False)
+    exceptions = getattr(
+        # List of complete domains such as 'api.example.com'
+        settings, "CANONICAL_DOMAIN_EXCEPTIONS", []
+    )
 
     if not host:
         return get_response
@@ -35,6 +39,14 @@ def canonical_domain(get_response):
             return get_response(request)
         elif matches and not secure:
             return get_response(request)
+
+        for exception in exceptions:
+            if request.get_host() == exception:
+                if secure and not request.is_secure():
+                    return HttpResponsePermanentRedirect(
+                        "https://%s%s" % (request.get_host(), request.get_full_path())
+                    )
+                return get_response(request)
 
         return HttpResponsePermanentRedirect(
             "http%s://%s%s"

@@ -22,4 +22,15 @@ Installation and usage
   enforce HTTPS.
 
 
+Configuration
+#############
+
+
+``CANONICAL_DOMAIN_EXCEPTIONS``
+Default: []
+
+A list of complete domain names such as ``'api.example.com'`` that should
+not be redirected to the canonical domain.
+
+
 .. include:: ../CHANGELOG.rst
