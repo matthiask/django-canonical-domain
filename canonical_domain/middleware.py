@@ -1,3 +1,5 @@
+import re
+
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -13,11 +15,17 @@ if not apps.is_installed("canonical_domain"):
 
 def canonical_domain(get_response):
     host = getattr(settings, "SECURE_SSL_HOST", "")
-    secure = getattr(settings, "SECURE_SSL_REDIRECT", False)
-    exceptions = getattr(
-        # List of complete domains such as 'api.example.com'
-        settings, "CANONICAL_DOMAIN_EXCEPTIONS", []
-    )
+    secure_redirect = getattr(settings, "SECURE_SSL_REDIRECT", False)
+
+    # List of complete domains such as r'^api.example.com$'
+    host_exempt = [
+        re.compile(r) for r in getattr(settings, "CANONICAL_DOMAIN_EXEMPT", [])
+    ]
+
+    # List of regex patterns for paths that should not be redirected
+    path_exempt = [
+        re.compile(r) for r in getattr(settings, "SECURE_REDIRECT_EXEMPT", [])
+    ]
 
     if not host:
         return get_response
@@ -33,25 +41,34 @@ def canonical_domain(get_response):
         }:
             return get_response(request)
 
+        path = request.path.lstrip("/")
+        secure_changes = not any(pattern.search(path) for pattern in path_exempt)
+        is_secure = (
+            (secure_redirect or request.is_secure())
+            if secure_changes else
+            request.is_secure()
+        )
+
         matches = request.get_host() == host
 
-        if matches and secure and request.is_secure():
-            return get_response(request)
-        elif matches and not secure:
+        if matches and (
+                (secure_redirect and request.is_secure())
+                or not secure_redirect
+                or not secure_changes
+        ):
             return get_response(request)
 
-        for exception in exceptions:
-            if request.get_host() == exception:
-                if secure and not request.is_secure():
-                    return HttpResponsePermanentRedirect(
-                        "https://%s%s" % (request.get_host(), request.get_full_path())
-                    )
-                return get_response(request)
+        if any(pattern.search(request.get_host()) for pattern in host_exempt):
+            if secure_redirect and not request.is_secure():
+                return HttpResponsePermanentRedirect(
+                    "https://%s%s" % (request.get_host(), request.get_full_path())
+                )
+            return get_response(request)
 
         return HttpResponsePermanentRedirect(
             "http%s://%s%s"
             % (
-                "s" if (secure or request.is_secure()) else "",
+                "s" if is_secure else "",
                 host,
                 request.get_full_path(),
             )
