@@ -27,7 +27,7 @@ Installation and usage
 
 
 Configuration
-#############
+=============
 
 
 ``CANONICAL_DOMAIN_EXEMPT``

@@ -8,7 +8,9 @@ Change log
   ``INSTALLED_APPS`` because otherwise the system checks wouldn't run at all.
 - Added deploy checks which verify that ``SECURE_SSL_HOST`` and
   ``SECURE_SSL_REDIRECT`` have been set.
-- Added Django 5.1rc1 to the CI matrix.
+- Added Django 5.1 to the CI matrix.
+- Added support for Django's ``SECURE_REDIRECT_EXEMPT`` setting and support for
+  adding additional hosts which shouldn't be redirected. Thanks @PetrDlouhy!
 
 
 `0.9`_ (2022-01-31)
