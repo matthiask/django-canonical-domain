@@ -53,7 +53,7 @@ class CanonicalDomainTestCase(TestCase):
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response["Location"], "http://example.com/")
 
-    @override_settings(SECURE_REDIRECT_EXEMPT=[r'^no-ssl$'])
+    @override_settings(SECURE_REDIRECT_EXEMPT=[r"^no-ssl$"])
     def test_path_exceptions(self):
         response = self.client.get("/no-ssl", headers={"host": "example.org"})
         self.assertEqual(response.status_code, 301)
@@ -63,7 +63,9 @@ class CanonicalDomainTestCase(TestCase):
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response["Location"], "https://example.com/")
 
-        response = self.client.get("/no-ssl", headers={"host": "example.com"}, secure=True)
+        response = self.client.get(
+            "/no-ssl", headers={"host": "example.com"}, secure=True
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"Hello world")
 
@@ -95,7 +97,9 @@ class CanonicalDomainSecureTestCase(TestCase):
 
     @override_settings(CANONICAL_DOMAIN_EXEMPT=["^api.example.com$"])
     def test_exceptions(self):
-        response = self.client.get("/", headers={"host": "api.example.com"}, secure=True)
+        response = self.client.get(
+            "/", headers={"host": "api.example.com"}, secure=True
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"Hello world")
 
@@ -111,7 +115,7 @@ class CanonicalDomainSecureTestCase(TestCase):
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response["Location"], "https://example.com/")
 
-    @override_settings(SECURE_REDIRECT_EXEMPT=[r'^no-ssl$'])
+    @override_settings(SECURE_REDIRECT_EXEMPT=[r"^no-ssl$"])
     def test_path_exceptions(self):
         # Unsecure path matching exempt and ssl_host should remain
         response = self.client.get("/no-ssl", headers={"host": "example.com"})
@@ -129,7 +133,9 @@ class CanonicalDomainSecureTestCase(TestCase):
         self.assertEqual(response["Location"], "https://example.com/")
 
         # Https version should also work
-        response = self.client.get("/no-ssl", headers={"host": "example.com"}, secure=True)
+        response = self.client.get(
+            "/no-ssl", headers={"host": "example.com"}, secure=True
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"Hello world")
 

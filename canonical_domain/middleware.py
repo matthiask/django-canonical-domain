@@ -45,16 +45,16 @@ def canonical_domain(get_response):
         secure_changes = not any(pattern.search(path) for pattern in path_exempt)
         is_secure = (
             (secure_redirect or request.is_secure())
-            if secure_changes else
-            request.is_secure()
+            if secure_changes
+            else request.is_secure()
         )
 
         matches = request.get_host() == host
 
         if matches and (
-                (secure_redirect and request.is_secure())
-                or not secure_redirect
-                or not secure_changes
+            (secure_redirect and request.is_secure())
+            or not secure_redirect
+            or not secure_changes
         ):
             return get_response(request)
 
