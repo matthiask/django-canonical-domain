@@ -17,10 +17,12 @@ def canonical_domain(get_response):
     host = getattr(settings, "SECURE_SSL_HOST", "")
     secure_redirect = getattr(settings, "SECURE_SSL_REDIRECT", False)
 
-    # List of complete domains such as r'^api.example.com$'
-    host_exempt = [
-        re.compile(r) for r in getattr(settings, "CANONICAL_DOMAIN_EXEMPT", [])
-    ]
+    # List of complete domains such as r'^api.example.com$' or a function
+    canonical_domain_exempt = getattr(settings, "CANONICAL_DOMAIN_EXEMPT", [])
+    if callable(canonical_domain_exempt):
+        host_exempt = []
+    else:
+        host_exempt = [re.compile(r) for r in canonical_domain_exempt]
 
     # List of regex patterns for paths that should not be redirected
     path_exempt = [
@@ -58,7 +60,9 @@ def canonical_domain(get_response):
         ):
             return get_response(request)
 
-        if any(pattern.search(request.get_host()) for pattern in host_exempt):
+        if (callable(canonical_domain_exempt) and canonical_domain_exempt(request)) or any(
+            pattern.search(request.get_host()) for pattern in host_exempt
+        ):
             if secure_redirect and not request.is_secure():
                 return HttpResponsePermanentRedirect(
                     "https://%s%s" % (request.get_host(), request.get_full_path())
