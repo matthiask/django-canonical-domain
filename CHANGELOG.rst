@@ -1,8 +1,12 @@
 Change log
 ==========
 
-`Next version`_
-~~~~~~~~~~~~~~~
+Next version
+~~~~~~~~~~~~
+
+
+0.10 (2024-08-08)
+~~~~~~~~~~~~~~~~~
 
 - Added the requirement that ``canonical_domain`` be added to
   ``INSTALLED_APPS`` because otherwise the system checks wouldn't run at all.
