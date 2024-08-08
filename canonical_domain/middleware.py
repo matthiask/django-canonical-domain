@@ -4,6 +4,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponsePermanentRedirect
+from django.utils.module_loading import import_string
 
 
 if not apps.is_installed("canonical_domain"):
@@ -14,28 +15,28 @@ if not apps.is_installed("canonical_domain"):
 
 
 def canonical_domain(get_response):
-    host = getattr(settings, "SECURE_SSL_HOST", "")
-    secure_redirect = getattr(settings, "SECURE_SSL_REDIRECT", False)
-
-    # List of complete domains such as r'^api.example.com$' or a function
-    canonical_domain_exempt = getattr(settings, "CANONICAL_DOMAIN_EXEMPT", [])
-    if callable(canonical_domain_exempt):
-        host_exempt = []
-    else:
-        host_exempt = [re.compile(r) for r in canonical_domain_exempt]
+    if not settings.SECURE_SSL_HOST:
+        return get_response
 
     # List of regex patterns for paths that should not be redirected
     path_exempt = [
         re.compile(r) for r in getattr(settings, "SECURE_REDIRECT_EXEMPT", [])
     ]
 
-    if not host:
-        return get_response
+    if exempt := getattr(
+        settings,
+        "CANONICAL_DOMAIN_EXEMPT",
+        lambda response: False,
+    ):
+        exempt = exempt if callable(exempt) else import_string(exempt)
 
     def middleware(request):
+        host = settings.SECURE_SSL_HOST
+        secure_redirect = settings.SECURE_SSL_REDIRECT
+
         # Only redirect safe methods according to the RFC:
         # https://tools.ietf.org/html/rfc7231#section-4.2.1
-        if not host or request.method not in {
+        if request.method not in {
             "GET",
             "HEAD",
             "OPTIONS",
@@ -43,37 +44,31 @@ def canonical_domain(get_response):
         }:
             return get_response(request)
 
-        path = request.path.lstrip("/")
-        secure_changes = not any(pattern.search(path) for pattern in path_exempt)
-        is_secure = (
-            (secure_redirect or request.is_secure())
-            if secure_changes
-            else request.is_secure()
-        )
-
         matches = request.get_host() == host
+        is_secure = request.is_secure()
 
-        if matches and (
-            (secure_redirect and request.is_secure())
-            or not secure_redirect
-            or not secure_changes
-        ):
+        # Simple case. Host matches and we do not have to redirect to secure
+        # (maybe because we already are).
+        if matches and (is_secure or not secure_redirect):
             return get_response(request)
 
-        if (callable(canonical_domain_exempt) and canonical_domain_exempt(request)) or any(
-            pattern.search(request.get_host()) for pattern in host_exempt
-        ):
-            if secure_redirect and not request.is_secure():
-                return HttpResponsePermanentRedirect(
-                    "https://%s%s" % (request.get_host(), request.get_full_path())
-                )
+        # Request may be exempt from redirects.
+        is_exempt = exempt(request)
+        if is_exempt and (is_secure or not secure_redirect):
             return get_response(request)
+
+        # Path is exempt from redirects.
+        path = request.path.lstrip("/")
+        if any(pattern.search(path) for pattern in path_exempt):
+            if matches or is_exempt:
+                return get_response(request)
+            secure_redirect = False
 
         return HttpResponsePermanentRedirect(
             "http%s://%s%s"
             % (
-                "s" if is_secure else "",
-                host,
+                "s" if is_secure or secure_redirect else "",
+                request.get_host() if is_exempt else host,
                 request.get_full_path(),
             )
         )

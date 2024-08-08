@@ -1,3 +1,4 @@
+import re
 from django.test import TestCase
 from django.test.utils import override_settings
 
@@ -39,21 +40,9 @@ class CanonicalDomainTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"Hello world")
 
-    @override_settings(CANONICAL_DOMAIN_EXEMPT=[r"^api.example.com$"])
-    def test_exceptions(self):
-        response = self.client.get("/", headers={"host": "api.example.com"})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b"Hello world")
-
-        response = self.client.get("/", headers={"host": "example.org"})
-        self.assertEqual(response.status_code, 301)
-        self.assertEqual(response["Location"], "http://example.com/")
-
-        response = self.client.get("/", headers={"host": "foo.example.com"})
-        self.assertEqual(response.status_code, 301)
-        self.assertEqual(response["Location"], "http://example.com/")
-
-    @override_settings(CANONICAL_DOMAIN_EXEMPT=lambda r: r.get_host() == "api.example.com")
+    @override_settings(
+        CANONICAL_DOMAIN_EXEMPT=lambda r: r.get_host() == "api.example.com"
+    )
     def test_callable_exception(self):
         response = self.client.get("/", headers={"host": "api.example.com"})
         self.assertEqual(response.status_code, 200)
@@ -105,7 +94,9 @@ class CanonicalDomainSecureTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"Hello world")
 
-    @override_settings(CANONICAL_DOMAIN_EXEMPT=["^api.example.com$"])
+    @override_settings(
+        CANONICAL_DOMAIN_EXEMPT=lambda r: re.search(r"^api.example.com$", r.get_host())
+    )
     def test_exceptions(self):
         response = self.client.get(
             "/", headers={"host": "api.example.com"}, secure=True
@@ -125,9 +116,13 @@ class CanonicalDomainSecureTestCase(TestCase):
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response["Location"], "https://example.com/")
 
-    @override_settings(CANONICAL_DOMAIN_EXEMPT=lambda r: r.get_host() == "api.example.com")
+    @override_settings(
+        CANONICAL_DOMAIN_EXEMPT=lambda r: r.get_host() == "api.example.com"
+    )
     def test_callable_exception(self):
-        response = self.client.get("/", headers={"host": "api.example.com"}, secure=True)
+        response = self.client.get(
+            "/", headers={"host": "api.example.com"}, secure=True
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"Hello world")
 
