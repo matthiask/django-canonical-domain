@@ -5,6 +5,13 @@ Next version
 ~~~~~~~~~~~~
 
 
+0.11 (2024-08-09)
+~~~~~~~~~~~~~~~~~
+
+- Changed ``CANONICAL_DOMAIN_EXEMPT`` to be a function or a dotted Python path
+  to a function instead of a list of regexes. It's more flexible.
+
+
 0.10 (2024-08-08)
 ~~~~~~~~~~~~~~~~~
 
